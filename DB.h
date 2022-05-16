@@ -3,10 +3,12 @@
 class DB
 {
 public:
+	
 	Angajat *data;
 	int numberOfElements;
-	DB() {
-		 data = new Angajat[numberOfElements + 1];
+	DB(int n=0) {
+		numberOfElements = n;
+		data = new Angajat[numberOfElements + 1];
 	}
 };
 

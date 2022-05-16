@@ -4,7 +4,7 @@
 
 #pragma once
 #include "Angajat.h"
-
+#include "DB.h"
 // CProiectDlg dialog
 class CProiectDlg : public CDialogEx
 {
@@ -34,9 +34,9 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	void insertObg(Angajat a);
+	void insertObg(Angajat a,CListCtrl& list);
 	CListCtrl m_listCtrl;
 	afx_msg void OnBnClickedOpenInsert();
-
-	Angajat lastIn;
+	int idd = 0;
+	DB DataBase;
 };

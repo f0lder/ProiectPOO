@@ -18,6 +18,7 @@ public:
 #endif
 
 protected:
+	virtual BOOL OnInitDialog();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
@@ -30,5 +31,7 @@ public:
 	COleDateTime insertDataAng;
 	CString insertDep;
 	Angajat ins;
+	bool pressed=0;
 	afx_msg void OnBnClickedButtonInsert();
+	CString depSelected;
 };

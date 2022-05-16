@@ -73,19 +73,19 @@ END_MESSAGE_MAP()
 
 // CProiectDlg message handlers
 
-void CProiectDlg::insertObg(Angajat a) {
-	int nItem;
+void CProiectDlg::insertObg(Angajat a,CListCtrl& list) {
+	int nItem=0;
 	CString s;
 	s.Format(_T("%d"), a.elementId);
-	nItem = m_listCtrl.InsertItem(0,  s);
-	m_listCtrl.SetItemText(nItem, 1, a.nume);
-	m_listCtrl.SetItemText(nItem, 2, a.prenume);
+	nItem = list.InsertItem(0,  s);
+	list.SetItemText(nItem, 1, a.nume);
+	list.SetItemText(nItem, 2, a.prenume);
 
 	s.Format(_T("%d"), a.varsta);
-	m_listCtrl.SetItemText(nItem, 3, s);//varsta
-	m_listCtrl.SetItemText(nItem, 4, a.adresa);
-	m_listCtrl.SetItemText(nItem, 5, a.departament);
-	m_listCtrl.SetItemText(nItem, 6, a.dataAngajarii.Format(_T("%A, %B %d, %Y")));
+	list.SetItemText(nItem, 3, s);//varsta
+	list.SetItemText(nItem, 4, a.adresa);
+	list.SetItemText(nItem, 5, a.departament);
+	list.SetItemText(nItem, 6, a.dataAngajarii.Format(_T("%A, %B %d, %Y")));
 }
 BOOL CProiectDlg::OnInitDialog()
 {
@@ -121,14 +121,14 @@ BOOL CProiectDlg::OnInitDialog()
 		0,              // Rank/order of item 
 		L"ID",          // Caption for this header 
 		LVCFMT_LEFT,    // Relative position of items under header 
-		100);           // Width of items under header
+		50);           // Width of items under header
 
 	m_listCtrl.InsertColumn(1, L"Nume", LVCFMT_CENTER, 80);
 	m_listCtrl.InsertColumn(2, L"Prenume", LVCFMT_CENTER, 80);
-	m_listCtrl.InsertColumn(3, L"Varsta", LVCFMT_LEFT, 100);
-	m_listCtrl.InsertColumn(4, L"Addresa", LVCFMT_LEFT, 80);
-	m_listCtrl.InsertColumn(5, L"Departament", LVCFMT_LEFT, 80);
-	m_listCtrl.InsertColumn(6, L"Data Angajarii", LVCFMT_LEFT, 100);
+	m_listCtrl.InsertColumn(3, L"Varsta", LVCFMT_CENTER, 100);
+	m_listCtrl.InsertColumn(4, L"Addresa", LVCFMT_CENTER, 80);
+	m_listCtrl.InsertColumn(5, L"Departament", LVCFMT_CENTER, 80);
+	m_listCtrl.InsertColumn(6, L"Data Angajarii", LVCFMT_CENTER, 150);
 
 	int nItem;
 
@@ -148,8 +148,13 @@ BOOL CProiectDlg::OnInitDialog()
 	m_listCtrl.SetItemText(nItem, 3, L"Address 3");
 
 	Angajat x;
-	insertObg(x);
+	x.adresa = "plm";
+	insertObg(x,m_listCtrl);
 
+	DataBase = DB(100);
+	for (int i = 1; i <= DataBase.numberOfElements; i++) {
+		insertObg(DataBase.data[i], m_listCtrl);
+	}
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -203,31 +208,20 @@ HCURSOR CProiectDlg::OnQueryDragIcon()
 }
 
 
-
+int Angajat::elementId = 1;
 void CProiectDlg::OnBnClickedOpenInsert()
 {
-	CInsertDLG insertDialog;
-	INT_PTR returnCode = -1;
-	returnCode = insertDialog.DoModal();
 	UpdateData();
-	lastIn = insertDialog.ins;
-	insertObg(lastIn);
-	UpdateData(FALSE);
-	//lastIn = insertDialog.ins;
-	//insertObg(lastIn);
-	switch (returnCode) {
-	case IDOK:
-		//gather your input fields here 
+	CInsertDLG insertDialog;
+	insertDialog.DoModal();
+	//insertObg(insertDialog.ins);
+	if (insertDialog.pressed) {
+		insertDialog.ins.elementId++;
 
-		break;
-	case IDCANCEL:
-		//do something
-		break;
-	case IDC_BUTTON_INSERT: {
-	}
-	case -1:
-	default:break;
-		//error creating box
+		DataBase.data[insertDialog.ins.elementId] = insertDialog.ins;
+
+		insertObg(insertDialog.ins, m_listCtrl);
+		insertDialog.pressed = 0;
 	}
 	// TODO: Add your control notification handler code here
 }

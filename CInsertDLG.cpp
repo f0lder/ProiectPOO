@@ -19,8 +19,9 @@ CInsertDLG::CInsertDLG(CWnd* pParent /*=nullptr*/)
 	, insertAdr(_T(""))
 	, insertDataAng(COleDateTime::GetCurrentTime())
 	, insertDep(_T(""))
+	, depSelected(_T(""))
 {
-
+	
 }
 
 CInsertDLG::~CInsertDLG()
@@ -35,9 +36,8 @@ void CInsertDLG::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT3, insertV);
 	DDX_Text(pDX, IDC_EDIT4, insertAdr);
 	DDX_MonthCalCtrl(pDX, IDC_MONTHCALENDAR1, insertDataAng);
-	DDX_Text(pDX, IDC_EDIT6, insertDep);
+	DDX_CBString(pDX, IDC_COMBO_DEP, depSelected);
 }
-
 
 BEGIN_MESSAGE_MAP(CInsertDLG, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CInsertDLG::OnEnChangeEdit1)
@@ -57,19 +57,38 @@ void CInsertDLG::OnEnChangeEdit1()
 
 	// TODO:  Add your control notification handler code here
 }
-
+BOOL CInsertDLG::OnInitDialog() {
+	
+	CComboBox* combo = (CComboBox*)GetDlgItem(IDC_COMBO_DEP);
+	CString s;
+	s = "HR";
+	combo->AddString(s);
+	s = "Desks";
+	combo->AddString(s);
+	
+	return TRUE;
+}
 void CInsertDLG::OnBnClickedButtonInsert()
 {
 	UpdateData();
-	Angajat x;
-	x.nume = insertName;
-	x.prenume = insertPrenume;
-	x.adresa = insertAdr;
-	x.dataAngajarii = insertDataAng;
-	x.varsta = _wtoi(insertV);
-	x.departament = insertDep;
-	ins = x;
+	CProiectDlg main;
+	ins.nume = insertName;
+	ins.prenume = insertPrenume;
+	ins.adresa = insertAdr;
+	ins.dataAngajarii = insertDataAng;
+	ins.varsta = _wtoi(insertV);
+	ins.departament = depSelected;
+
+	//main.lastIn = ins;
+	//main.insertObg(ins,main.m_c);
+	if (ins.nume != "") {
+		pressed = 1;
+
+		CInsertDLG::EndDialog(NULL);
+	}
+	else {
+		MessageBox(CA2CT ("Numele nu poate fi gol"),CA2CT( "titlu"), MB_ICONERROR | MB_OK);
+	}
 	UpdateData(FALSE);
-	CInsertDLG::EndDialog(NULL);
 	// TODO: Add your control notification handler code here
 }

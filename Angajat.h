@@ -2,7 +2,7 @@
 class Angajat
 {
 public:
-	int elementId=3;
+	int static elementId;
 	CString nume;
 	CString prenume;
 	int varsta;
@@ -17,17 +17,15 @@ public:
 		adresa = a;
 		dataAngajarii = d;
 		departament = dep;
-		Angajat::elementId++;
 	}
 	Angajat(Angajat &a) {
-		elementId = a.elementId + 1;
 		nume = a.nume;
 		prenume = a.prenume;
 		varsta = a.varsta;
 		adresa = a.adresa;
 		dataAngajarii = a.dataAngajarii;
 		departament = a.departament;
-		Angajat::elementId++;
 	}
+
 };
 
