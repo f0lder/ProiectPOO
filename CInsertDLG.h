@@ -34,4 +34,5 @@ public:
 	bool pressed=0;
 	afx_msg void OnBnClickedButtonInsert();
 	CString depSelected;
+	CString getSalariu;
 };

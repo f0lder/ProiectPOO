@@ -1,4 +1,4 @@
-// CInsertDLG.cpp : implementation file
+﻿// CInsertDLG.cpp : implementation file
 //
 
 #include "pch.h"
@@ -7,6 +7,7 @@
 #include "CInsertDLG.h"
 #include "Angajat.h"
 #include "ProiectDlg.h"
+#include "fstream"
 // CInsertDLG dialog
 
 IMPLEMENT_DYNAMIC(CInsertDLG, CDialogEx)
@@ -20,6 +21,7 @@ CInsertDLG::CInsertDLG(CWnd* pParent /*=nullptr*/)
 	, insertDataAng(COleDateTime::GetCurrentTime())
 	, insertDep(_T(""))
 	, depSelected(_T(""))
+	, getSalariu(_T(""))
 {
 	
 }
@@ -37,6 +39,7 @@ void CInsertDLG::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT4, insertAdr);
 	DDX_MonthCalCtrl(pDX, IDC_MONTHCALENDAR1, insertDataAng);
 	DDX_CBString(pDX, IDC_COMBO_DEP, depSelected);
+	DDX_Text(pDX, IDC_EDIT5, getSalariu);
 }
 
 BEGIN_MESSAGE_MAP(CInsertDLG, CDialogEx)
@@ -78,9 +81,11 @@ void CInsertDLG::OnBnClickedButtonInsert()
 	ins.dataAngajarii = insertDataAng;
 	ins.varsta = _wtoi(insertV);
 	ins.departament = depSelected;
+	ins.salariu = _wtof(getSalariu);
 
-	//main.lastIn = ins;
-	//main.insertObg(ins,main.m_c);
+	main.saveToFile(ins, L"date.txt");
+
+	//ins.save(file);
 	if (ins.nume != "") {
 		pressed = 1;
 

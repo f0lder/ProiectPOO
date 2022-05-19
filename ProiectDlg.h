@@ -35,8 +35,20 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	void insertObg(Angajat a,CListCtrl& list);
+	void saveToFile(Angajat a, LPCWSTR filename);
 	CListCtrl m_listCtrl;
 	afx_msg void OnBnClickedOpenInsert();
 	int idd = 0;
 	DB DataBase;
+	afx_msg void OnBnClickedButton1();
+//	afx_msg void OnNMClickList1(NMHDR* pNMHDR, LRESULT* pResult);
+//	afx_msg void OnNMDblclkList1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedRadio1();
+	afx_msg void OnBnClickedRadio2();
+	afx_msg void OnBnClickedRadio3();
+	afx_msg void OnLvnEndlabeleditList1(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedButtonEdit();
+	afx_msg void OnBnClickedButton4();
+	afx_msg void OnNMDblclkList1(NMHDR* pNMHDR, LRESULT* pResult);
 };

@@ -9,6 +9,7 @@
 #include "afxdialogex.h"
 #include "Angajat.h"
 #include "CInsertDLG.h"
+#include "CEditDLG.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -68,6 +69,13 @@ BEGIN_MESSAGE_MAP(CProiectDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_OPEN_INSERT, &CProiectDlg::OnBnClickedOpenInsert)
+	ON_BN_CLICKED(IDC_BUTTON1, &CProiectDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_RADIO1, &CProiectDlg::OnBnClickedRadio1)
+	ON_BN_CLICKED(IDC_RADIO2, &CProiectDlg::OnBnClickedRadio2)
+	ON_BN_CLICKED(IDC_RADIO3, &CProiectDlg::OnBnClickedRadio3)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT, &CProiectDlg::OnBnClickedButtonEdit)
+	ON_BN_CLICKED(IDC_BUTTON4, &CProiectDlg::OnBnClickedButton4)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CProiectDlg::OnNMDblclkList1)
 END_MESSAGE_MAP()
 
 
@@ -86,6 +94,20 @@ void CProiectDlg::insertObg(Angajat a,CListCtrl& list) {
 	list.SetItemText(nItem, 4, a.adresa);
 	list.SetItemText(nItem, 5, a.departament);
 	list.SetItemText(nItem, 6, a.dataAngajarii.Format(_T("%A, %B %d, %Y")));
+	s.Format(_T("%f"), a.salariu);
+	list.SetItemText(nItem, 7, s);
+}
+void CProiectDlg:: saveToFile(Angajat a, LPCWSTR filename) {
+	std::ofstream myfile;
+	USES_CONVERSION;
+	CString stringtoprint;
+	stringtoprint.Format(_T("%d\n%s\n%s\n%s\n%d\n"),a.elementId, a.nume, a.prenume, a.adresa, a.varsta);
+	CStringA output = T2A(stringtoprint);
+	myfile.open(filename, std::ios_base::app);
+	for (int i = 0; i < output.GetLength(); i++) {
+		myfile << output[i];
+	}
+	myfile.close();
 }
 BOOL CProiectDlg::OnInitDialog()
 {
@@ -120,41 +142,39 @@ BOOL CProiectDlg::OnInitDialog()
 	m_listCtrl.InsertColumn(
 		0,              // Rank/order of item 
 		L"ID",          // Caption for this header 
-		LVCFMT_LEFT,    // Relative position of items under header 
+		LVCFMT_FIXED_WIDTH,    // Relative position of items under header 
 		50);           // Width of items under header
 
-	m_listCtrl.InsertColumn(1, L"Nume", LVCFMT_CENTER, 80);
-	m_listCtrl.InsertColumn(2, L"Prenume", LVCFMT_CENTER, 80);
-	m_listCtrl.InsertColumn(3, L"Varsta", LVCFMT_CENTER, 100);
-	m_listCtrl.InsertColumn(4, L"Addresa", LVCFMT_CENTER, 80);
-	m_listCtrl.InsertColumn(5, L"Departament", LVCFMT_CENTER, 80);
-	m_listCtrl.InsertColumn(6, L"Data Angajarii", LVCFMT_CENTER, 150);
+	m_listCtrl.InsertColumn(1, L"Nume", LVCFMT_FIXED_WIDTH, 80);
+	m_listCtrl.InsertColumn(2, L"Prenume", LVCFMT_FIXED_WIDTH, 80);
+	m_listCtrl.InsertColumn(3, L"Varsta", LVCFMT_FIXED_WIDTH, 100);
+	m_listCtrl.InsertColumn(4, L"Addresa", LVCFMT_FIXED_WIDTH, 150);
+	m_listCtrl.InsertColumn(5, L"Departament", LVCFMT_FIXED_WIDTH, 80);
+	m_listCtrl.InsertColumn(6, L"Data Angajarii", LVCFMT_FIXED_WIDTH, 150);
+	m_listCtrl.InsertColumn(7, L"Salariu", LVCFMT_FIXED_WIDTH, 100);
 
-	int nItem;
+	CButton* pButton2 = (CButton*)this->GetDlgItem(IDC_RADIO1);
+	pButton2->SetFocus();
+	pButton2->SetCheck(true);
 
-	nItem = m_listCtrl.InsertItem(0, L"1");
-	m_listCtrl.SetItemText(nItem, 1, L"Mark");
-	m_listCtrl.SetItemText(nItem, 2, L"45");
-	m_listCtrl.SetItemText(nItem, 3, L"Address 1");
-
-	nItem = m_listCtrl.InsertItem(0, L"2");
-	m_listCtrl.SetItemText(nItem, 1, L"Allan");
-	m_listCtrl.SetItemText(nItem, 2, L"29");
-	m_listCtrl.SetItemText(nItem, 3, L"Address 2");
-
-	nItem = m_listCtrl.InsertItem(0, L"3");
-	m_listCtrl.SetItemText(nItem, 1, L"Ajay");
-	m_listCtrl.SetItemText(nItem, 2, L"37");
-	m_listCtrl.SetItemText(nItem, 3, L"Address 3");
-
-	Angajat x;
-	x.adresa = "plm";
-	insertObg(x,m_listCtrl);
-
-	DataBase = DB(100);
-	for (int i = 1; i <= DataBase.numberOfElements; i++) {
+	DataBase = DB(20);
+	for (int i = 1; i <= DataBase.numberOfElements-10; i++) {
+		DataBase.data[i].elementId = i;
+		saveToFile(DataBase.data[i], L"date.txt");
 		insertObg(DataBase.data[i], m_listCtrl);
 	}
+
+	m_listCtrl.SetExtendedStyle(m_listCtrl.GetExtendedStyle() | LVS_EX_GRIDLINES);
+	m_listCtrl.SetExtendedStyle(m_listCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT); 
+	//m_listCtrl.SetExtendedStyle(m_listCtrl.GetExtendedStyle() | LVS_EDITLABELS);
+	//m_listCtrl.SetView(LVS_EDITLABELS);
+
+	for (int i = 0; i < m_listCtrl.GetHeaderCtrl()->GetItemCount(); ++i)
+		m_listCtrl.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
+
+	m_listCtrl.SetColumnWidth(4, LVSCW_AUTOSIZE_USEHEADER);
+	m_listCtrl.SetRedraw(true);
+	m_listCtrl.UpdateWindow();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -208,7 +228,6 @@ HCURSOR CProiectDlg::OnQueryDragIcon()
 }
 
 
-int Angajat::elementId = 1;
 void CProiectDlg::OnBnClickedOpenInsert()
 {
 	UpdateData();
@@ -216,12 +235,109 @@ void CProiectDlg::OnBnClickedOpenInsert()
 	insertDialog.DoModal();
 	//insertObg(insertDialog.ins);
 	if (insertDialog.pressed) {
+
 		insertDialog.ins.elementId++;
 
 		DataBase.data[insertDialog.ins.elementId] = insertDialog.ins;
 
+		//insertDialog.ins.write();
+		//insertDialog.ins.read();
+
 		insertObg(insertDialog.ins, m_listCtrl);
+	
 		insertDialog.pressed = 0;
 	}
 	// TODO: Add your control notification handler code here
+}
+
+
+void CProiectDlg::OnBnClickedButtonEdit()
+{
+	UpdateData();
+	CEditDLG editDlg;
+	CString s;
+	int nSelectedItemIndex = m_listCtrl.GetNextItem(-1, LVIS_SELECTED);
+
+	s = m_listCtrl.GetItemText(nSelectedItemIndex, 0);
+	editDlg.editId =(CString) "ID: " + s;
+
+	s = m_listCtrl.GetItemText(nSelectedItemIndex, 1);
+	editDlg.editNume = s;
+
+	s = m_listCtrl.GetItemText(nSelectedItemIndex, 2);
+	editDlg.editPrenume = s;
+
+	if (s == "") {
+		MessageBox(CA2CT("Nu ati selectat un rand!"), CA2CT("Eroare"), MB_ICONERROR | MB_OK);
+	}
+	else {
+		editDlg.DoModal();
+	}
+	
+	// TODO: Add your control notification handler code here
+}
+
+
+void CProiectDlg::OnBnClickedButton1()
+{
+	// TODO: Add your control notification handler code here
+	
+	m_listCtrl.SetExtendedStyle(m_listCtrl.GetExtendedStyle() | LVS_EX_HEADERDRAGDROP);
+}
+
+
+void CProiectDlg::OnBnClickedButton3()
+{
+	int nSelectedItemIndex = m_listCtrl.GetNextItem(-1, LVIS_SELECTED);
+	CString s;
+
+	s = m_listCtrl.GetItemText(nSelectedItemIndex, 1);
+	s.Format(_T("Nume : %s \nPrenume: %s\nVarsta: %s"), m_listCtrl.GetItemText(nSelectedItemIndex, 1), m_listCtrl.GetItemText(nSelectedItemIndex, 2), m_listCtrl.GetItemText(nSelectedItemIndex, 3));
+	MessageBox(s, CA2CT("Info"), MB_OK);
+	// TODO: Add your control notification handler code here
+}
+
+
+void CProiectDlg::OnBnClickedRadio1()
+{
+	// TODO: Add your control notification handler code here
+	m_listCtrl.SetView(LVS_REPORT);
+	UpdateData(FALSE);
+}
+
+
+void CProiectDlg::OnBnClickedRadio2()
+{
+	// TODO: Add your control notification handler code here
+	m_listCtrl.SetView(LVS_ICON);
+	UpdateData(FALSE);
+}
+
+
+void CProiectDlg::OnBnClickedRadio3()
+{
+	// TODO: Add your control notification handler code here
+	m_listCtrl.SetView(LVS_LIST);
+	UpdateData(FALSE);
+}
+
+
+void CProiectDlg::OnBnClickedButton4()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CProiectDlg::OnNMDblclkList1(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	//event pentru dubluclick pe tabel
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	int nSelectedItemIndex = m_listCtrl.GetNextItem(-1, LVIS_SELECTED);
+	CString s;
+
+	s = m_listCtrl.GetItemText(nSelectedItemIndex, 1);
+	s.Format(_T("Nume : %s \nPrenume: %s\nVarsta: %s ani\nAdresa: %s"), m_listCtrl.GetItemText(nSelectedItemIndex, 1), m_listCtrl.GetItemText(nSelectedItemIndex, 2), m_listCtrl.GetItemText(nSelectedItemIndex, 3), m_listCtrl.GetItemText(nSelectedItemIndex, 4));
+	MessageBox(s, CA2CT("Info"), MB_OK);
+	*pResult = 0;
 }
